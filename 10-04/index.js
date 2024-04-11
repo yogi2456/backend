@@ -10,7 +10,7 @@ app.get('/', (req, res) => {
 
 app.post('/register', (req, res) => {
     try {
-        // console.log(req.body, "request body")
+        console.log(req.body, "request body")
         const {name, email, password, confirmpassword} = req.body;
         // console.log(name, email, password, confirmpassword, "userData")
         if(!name || !email || !password || !confirmpassword) {
