@@ -18,7 +18,7 @@ app.get("/filter-users", async (req, res) => {
         const { age } = req.body;
 
         // const users = await UserSchema.find();
-        // const users = await UserSchema.find({ name: "yogesh", email: "abc@gmail.com"});
+        // const users = await UserSchema.find({ name: "yogesh", email: "yogesh@gmail.com"});
         // const users = await UserSchema.find({age: {$eq: 20}});
         // const users = await UserSchema.find({age: {$ne: 20}});
         // const users = await UserSchema.find({age: {$gt: 20}});
@@ -30,10 +30,10 @@ app.get("/filter-users", async (req, res) => {
         // const users = await UserSchema.find({contact: {$exists: true}});
         // const users = await UserSchema.find({$and: [{name: "yogesh"}, {email: "yogesh@gmail.com"}]});
         // const users = await UserSchema.find({$or: [{name: "yogesh"}, {email: "abc@gmail.com"}]});
-        // const users = await UserSchema.find({age: {$not: {age: 20}}});
+        // const users = await UserSchema.find({age: {$not: {$lt: 20}}});
         // const users = await UserSchema.find({$nor: [{name: "yogesh"}, {email: "yogesh@gmail.com"}]});
         // const users = await UserSchema.find({contact: {$exists: true}});
-        // const users = await UserSchema.find({age: {$type: "20"}});
+        const users = await UserSchema.find({age: {$type: "number"}});
 
         return res.status(200).json({ success: true, messsage: "users found", users});
     } catch (error) {
