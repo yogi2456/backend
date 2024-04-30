@@ -71,8 +71,8 @@ export const Login = async (req, res) => {
         return res.status(401).json({success: false, message: "Password is wrong..."})
     }
 
-    const token = jwt.sign({ id: user._id}, process.env.JWT_SECRET)
-    console.log(token, "token")
+    const token = jwt.sign({ id: user._id}, process.env.JWT_SECRET, { expiresIn: 100} )
+    // console.log(token, "token")
 
     res.cookie("token", token);
 
@@ -82,3 +82,49 @@ export const Login = async (req, res) => {
     return res.status(500).json({ success: false, message: error});
   }
 };
+
+
+export const ValidateToken = async (req, res) => {
+  try {
+    const token = req.cookies.token;
+    // console.log(token, "token")
+    if (!token) {
+      return res.json({
+        success: false,
+        message: "Token not found.",
+      });
+    }
+    const decodedData = await jwt.verify(token, process.env.JWT_SECRET, (err, res) => {
+      if(err) {
+        return "token expired";
+      }
+      return res;
+    });
+    console.log(decodedData);
+
+    if(decodedData == "token expired") {
+      return res.send({ success: false, message: "token expired."})
+    }
+    if (!decodedData.id) {
+      return res.json({
+        success: false,
+        message: "Token is expired.",
+      });
+    }
+
+    const user = await UserSchema.findById(decodedData.id);
+
+    console.log(user);
+    if (!user) {
+      return res.json({
+        success: false,
+        message: "Token is not valid.",
+      });
+    }
+
+    return res.json({ user, success: true });
+  } catch (error) {
+    console.log(error, "error");
+    return res.json({ error, success: false });
+  }
+}
