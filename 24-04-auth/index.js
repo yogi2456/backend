@@ -2,11 +2,18 @@ import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import AllRoutes from './routes/index.js';
+import cors from 'cors';
+
+var corsOptions = {
+    origin: "http://localhost:3000",
+    credentials: true,
+};
 
 const app = express();
 
 app.use(express.json());
 dotenv.config();
+app.use(cors(corsOptions));
 
 app.get("/", (req, res) => {
     res.send("It is Working")
