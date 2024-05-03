@@ -105,12 +105,21 @@ export const ValidateToken = async (req, res) => {
     if(decodedData == "token expired") {
       return res.send({ success: false, message: "token expired."})
     }
+    
+    // const decodedData = await jwt.verify(token, process.env.JWT_SECRET)
+    // console.log(decodedData);
+
     if (!decodedData.id) {
       return res.json({
         success: false,
         message: "Token is expired.",
       });
     }
+
+    // const expireTime = Math.floor(Date.now()/ 1000);
+    // if(!decodedData.exp < expireTime) {
+    //   return res.json({ success: false, message: "Token Expired"})
+    // }
 
     const user = await UserSchema.findById(decodedData.id);
 
