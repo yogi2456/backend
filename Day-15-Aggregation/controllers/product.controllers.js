@@ -1,17 +1,28 @@
+import { Schema } from "mongoose";
 import ProductSchema from "../modals/product.schema.js";
 
 export const AddProduct = async (req, res) => {
     try {
-        const { name, category, price, quantity} = req.body;
-        if(!name || !category || !price || !quantity) {
+        const { name, category, price, quantity, tags, userId} = req.body;
+        if(!name || !category || !price || !quantity || !tags || !userId) {
             return res.status(401).json({ success: false, message: "All fields are required.."})
         }
+
+        // const { error } = Schema.validate(req.body);
+
+        // if(error){
+        //     const errorDetails = error.details.map(d => d.message).join('<br>');
+        //     res.send(`<h2>Validation Error:</h2>${errorDetails}`)
+        //     return;
+        // }
 
         const newProduct = await ProductSchema({
             name: name,
             category: category,
             price: price,
-            quantity: quantity
+            quantity: quantity,
+            tags: tags,
+            user: userId,
         });
 
         await newProduct.save();
@@ -46,4 +57,32 @@ export const GetProduct = async (req, res) => {
     } catch (error) {
         return res.status(500).json({ success: false, message: error})
     }
+}
+
+export const Projecting = async (req, res) => {
+    try {
+        const aggregation = [
+            {$unwind: "$tags"},
+            {$project: { name: 1, price: 1} }
+        ]
+
+        const filterProducts = await ProductSchema.aggregate(aggregation);
+        console.log(filterProducts, "filterProducts")
+        return res.status(200).json({success: true, message: "Products are unminding and projecting"})
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error})
+    }
+}
+
+export const GetProductByUser = async (req, res) => {
+    try {
+        const { userId } = req.body;
+        const products = await ProductSchema.find({ user: userId }).populate(
+          "user"
+        );
+        res.send(products);
+      } catch (error) {
+        console.log(error);
+        return res.json({ success: false, error });
+      }
 }
