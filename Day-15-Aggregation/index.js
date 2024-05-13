@@ -3,13 +3,20 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import AllRoutes from './routes/index.js';
+import cookieParser from 'cookie-parser';
+
+var corsOptions = {
+    origin: "http://localhost:3000",
+    credentials: true,
+};
 
 
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
 dotenv.config();
+app.use(cookieParser());
 
 app.get('/', (req, res) => {
     res.send("It is Working..")

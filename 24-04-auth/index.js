@@ -6,7 +6,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
 var corsOptions = {
-    origin: "http://localhost:3000",
+    origin: "http://localhost:3003",
     credentials: true,
 };
 

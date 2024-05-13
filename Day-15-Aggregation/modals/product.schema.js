@@ -7,6 +7,7 @@ const productSchema = new Schema({
     category: String,
     price: Number,
     quantity: Number,
+    image: String,
     tags: [String],
     user: { type: mongoose.Schema.Types.ObjectId, ref: "Users" },
 });

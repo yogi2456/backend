@@ -1,12 +1,13 @@
 import { Router } from 'express'
-import { AddProduct, GetProduct, GetProductByUser, Projecting } from '../controllers/product.controllers.js';
+import { AddProduct, GetProductByUser, GetProductsByCategoryPrice, GetProduts, Projecting } from '../controllers/product.controllers.js';
 
 const router = Router();
 
 
 router.post("/add-product", AddProduct);
-router.get("/get-product", GetProduct);
+router.post("/get-products-by-category-price", GetProductsByCategoryPrice);
 router.get("/projecting", Projecting);
 router.post("/get-product-by-user", GetProductByUser);
+router.get("/get-products", GetProduts)
 
 export default router;

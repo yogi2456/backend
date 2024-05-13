@@ -1,12 +1,14 @@
-import { Schema } from "mongoose";
+// import { Schema } from "mongoose";
 import ProductSchema from "../modals/product.schema.js";
 
 export const AddProduct = async (req, res) => {
     try {
-        const { name, category, price, quantity, tags, userId} = req.body;
-        if(!name || !category || !price || !quantity || !tags || !userId) {
+        const { name, category, price, quantity, tags, image} = req.body.productData;
+        if(!name || !category || !price || !quantity || !tags || !image) {
             return res.status(401).json({ success: false, message: "All fields are required.."})
         }
+
+        const {userId} = req.body;
 
         // const { error } = Schema.validate(req.body);
 
@@ -23,6 +25,7 @@ export const AddProduct = async (req, res) => {
             quantity: quantity,
             tags: tags,
             user: userId,
+            image: image
         });
 
         await newProduct.save();
@@ -33,7 +36,7 @@ export const AddProduct = async (req, res) => {
     }
 }
 
-export const GetProduct = async (req, res) => {
+export const GetProductsByCategoryPrice = async (req, res) => {
     try {
         const pipeline = [
             {
@@ -85,4 +88,13 @@ export const GetProductByUser = async (req, res) => {
         console.log(error);
         return res.json({ success: false, error });
       }
+}
+
+export const GetProduts = async (req, res) => {
+    try {
+        const products = await ProductSchema.find({});
+        return res.json({ success: true, products})
+    } catch (error) {
+        return res.json({ success: false, error})
+    }
 }
