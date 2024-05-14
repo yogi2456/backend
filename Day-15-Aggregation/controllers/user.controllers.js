@@ -4,8 +4,8 @@ import jwt from 'jsonwebtoken';
 
 export const Register = async (req, res) => {
     try {
-      const { name, email, password, confirmPassword } = req.body.userData;
-      if (!name || !email || !password || !confirmPassword) {
+      const { name, email, password, confirmPassword, role } = req.body.userData;
+      if (!name || !email || !password || !confirmPassword || !role) {
         return res
           .status(401)
           .json({ success: false, message: "All fields are required..." });
@@ -41,6 +41,7 @@ export const Register = async (req, res) => {
         name: name,
         email: email,
         password: hashedPassword,
+        role: role
       });
   
       await newUser.save();
@@ -77,7 +78,7 @@ export const Register = async (req, res) => {
   
       res.cookie("token", token);
   
-      return res.status(200).json({ success: true, message: "Login Succesfull...", userData: user,})
+      return res.status(200).json({ success: true, message: "Login Succesfull...", userData: {name: user.name, email: user.email, role: user.role},})
   
     } catch (error) {
       return res.status(500).json({ success: false, message: error});
@@ -85,16 +86,7 @@ export const Register = async (req, res) => {
   };
   
   
-  export const ValidateToken = async (req, res) => {
-    try {
-      const token = req?.cookies?.token;
-      // console.log(token, "token")
-      if (!token) {
-        return res.json({
-          success: false,
-          message: "Token not found.",
-        });
-      }
+ 
       // const decodedData = await jwt.verify(token, process.env.JWT_SECRET, (err, res) => {
       //   if(err) {
       //     return "token expired";
@@ -107,35 +99,45 @@ export const Register = async (req, res) => {
       //   return res.send({ success: false, message: "token expired."})
       // }
       
-      const decodedData = await jwt.verify(token, process.env.JWT_SECRET)
-      console.log(decodedData);
-  
-      // if (!decodedData.id) {
-      //   return res.json({
-      //     success: false,
-      //     message: "Token is expired.",
-      //   });
-      // }
+      
   
       // const expireTime = Math.floor(Date.now()/ 1000);
       // if(!decodedData.exp < expireTime) {
       //   return res.json({ success: false, message: "Token Expired"})
       // }
   
-      const user = await UserSchema.findById(decodedData.id);
-  
-      console.log(user);
-      if (!user) {
-        return res.json({
-          success: false,
-          message: "Token is not valid.",
-        });
-      }
-  
-      return res.json({ user, success: true });
-    } catch (error) {
-      console.log(error, "error");
-      return res.json({ error, success: false });
-    }
-  }
+      export const validateToken = async (req, res) => {
+        try {
+          const token = req?.cookies?.token;
+          if (!token) {
+            return res.json({
+              success: false,
+              message: "Token not found.",
+            });
+          }
+          const decodedData = await jwt.verify(token, process.env.JWT_SECRET);
+          // console.log(decodedData);
+          if (!decodedData.id) {
+            return res.json({
+              success: false,
+              message: "Token is expired.",
+            });
+          }
+      
+          const user = await UserSchema.findById(decodedData.id);
+      
+          // console.log(user);
+          if (!user) {
+            return res.json({
+              success: false,
+              message: "Token is not valid.",
+            });
+          }
+      
+          return res.json({ user, success: true });
+        } catch (error) {
+          console.log(error, "error");
+          return res.json({ error, success: false });
+        }
+      };
   

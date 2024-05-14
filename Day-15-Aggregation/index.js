@@ -5,13 +5,15 @@ import cors from 'cors';
 import AllRoutes from './routes/index.js';
 import cookieParser from 'cookie-parser';
 
+
+
+
+const app = express();
+
 var corsOptions = {
     origin: "http://localhost:3000",
     credentials: true,
 };
-
-
-const app = express();
 
 app.use(express.json());
 app.use(cors(corsOptions));

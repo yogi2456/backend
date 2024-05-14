@@ -90,7 +90,7 @@ export const GetProductByUser = async (req, res) => {
       }
 }
 
-export const GetProduts = async (req, res) => {
+export const GetAllProduts = async (req, res) => {
     try {
         const products = await ProductSchema.find({});
         return res.json({ success: true, products})
