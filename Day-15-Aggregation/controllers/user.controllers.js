@@ -140,4 +140,12 @@ export const Register = async (req, res) => {
           return res.json({ error, success: false });
         }
       };
-  
+
+export const Logout = (req, res) => {
+  try {
+    res.cookie("token", "");
+    return res.json({ success: true, message: "Logout successfull"})
+  } catch (error) {
+    return res.json({error, success: false});
+  }
+}

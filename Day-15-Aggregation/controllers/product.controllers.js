@@ -77,13 +77,13 @@ export const Projecting = async (req, res) => {
     }
 }
 
-export const GetProductByUser = async (req, res) => {
+export const GetProductBySeller = async (req, res) => {
     try {
         const { userId } = req.body;
         const products = await ProductSchema.find({ user: userId }).populate(
           "user"
         );
-        res.send(products);
+        return res.json({ success: true, products})
       } catch (error) {
         console.log(error);
         return res.json({ success: false, error });
