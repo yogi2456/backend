@@ -1,6 +1,7 @@
 import UserSchema from "../modals/user.schema.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import ProductSchema from "../modals/product.schema.js";
 
 export const Register = async (req, res) => {
     try {
@@ -78,7 +79,7 @@ export const Register = async (req, res) => {
   
       res.cookie("token", token);
   
-      return res.status(200).json({ success: true, message: "Login Succesfull...", userData: {name: user.name, email: user.email, role: user.role},})
+      return res.status(200).json({ success: true, message: "Login Succesfull...", userData: {name: user.name, email: user.email, role: user.role, _id: user._id},})
   
     } catch (error) {
       return res.status(500).json({ success: false, message: error});
@@ -147,5 +148,83 @@ export const Logout = (req, res) => {
     return res.json({ success: true, message: "Logout successfull"})
   } catch (error) {
     return res.json({error, success: false});
+  }
+}
+
+export const AddToCart = async (req, res) => {
+  try {
+    const { userId, productId } = req.body;
+    console.log(userId, productId)
+
+    const user = await UserSchema.findByIdAndUpdate(userId, {$addToSet: { cart: productId}}, {new: true});
+    if(!user){
+      return res.json({ success: false, message: "user not found"})
+    }
+    console.log(user, "user")
+
+    return res.json({ success: true, message: "Product Successfully added to cart."})
+  } catch (error) {
+    return res.json({ success: false, error});
+  }
+}
+
+export const AddToWishlist = async (req, res) => {
+  try {
+    const { userId, productId} = req.body;
+
+    const user = await UserSchema.findByIdAndUpdate(userId, { $addToSet: { wishlist: productId}}, { new: true});
+    if(!user) {
+      return res.json({ success: false, message: "user not found"});
+    }
+
+    return res.json({ success: true, message: "Product successfully added to widhlist"})
+  } catch (error) {
+    return res.json({ success: false, error})
+  }
+}
+
+export const Cart = async (req, res) => {
+  try {
+      const {userId} = req.body;
+      if(!userId) return res.status(404).json({success: false, message: "User is mandatory..."})
+      const user = await UserSchema.findById(id)
+      // if(!user) return res.status(404).json({success: false, message: "User not found"})
+      console.log(user.cart, "cart")
+      if(user) {
+          var userCart = []
+          for(var i = 0; i < user.cart.length; i++) {
+              console.log(user.cart[i], "user.cart[i")
+              const productData = await ProductSchema.findById(user.cart[i])
+              userCart.push(productData)
+          }
+          console.log(userCart, "userCart")
+          return res.status(201).json({success: true, message: "Products fetched successfully..", products: userCart})
+      }
+  } catch (error) {
+      return res.status(500).json({success: false, message: error})
+  }
+}
+
+
+export const DeleteCart = async (req, res) => {
+  try {
+      const { productId, userId} = req.body;
+      if (!productId || !userId) return res.status(404).json({ success: false, message: "User and Product are mandatory.."})
+
+      const user = await UserSchema.findById(userId)
+      if (!user) return res.status(404).json({ success: false, message: "User not found.."})
+
+      const index = user.cart.indexOf(productId);
+      user.cart.splice(index, 1)
+      await user.save();
+
+      var userCart = []
+      for (var i = 0; i < user.cart.length; i++) {
+          const productData = await ProductSchema.findById(user.cart[i])
+          userCart.push(productData)
+      }
+      return res.status(201).json({ success: true, message: "Product deleted successfully.", products: userCart })
+  } catch (error) {
+      return res.status(500).json({ success: false, message: error} )
   }
 }
