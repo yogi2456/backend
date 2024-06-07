@@ -11,7 +11,7 @@ import cookieParser from 'cookie-parser';
 const app = express();
 
 var corsOptions = {
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000", "https://awdiz26-react.vercel.app/"],
     credentials: true,
 };
 
